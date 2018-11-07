@@ -3,12 +3,12 @@ module.exports = function ( grunt ) {
 	grunt.loadNpmTasks( 'grunt-jsonlint' );
 	grunt.loadNpmTasks( 'grunt-markdownlint' );
 
-grunt.initConfig( {
+	grunt.initConfig( {
 		jsonlint: {
 			all: [
 				'**/*.json'
 			]
-},
+		},
 		markdownlint: {
 			options: {
 				config: {
@@ -20,19 +20,16 @@ grunt.initConfig( {
 				'**/*.md'
 			]
 		}
-} );
-	grunt.registerTask( 'lint',
-		[
-			'jsonlint',
-			'markdownlint'
-		] );
-	grunt.registerTask( 'test',
-		[
-			'lint',
-			'smell'
-		] );
-	grunt.registerTask( 'default',
-		[
-			'test'
-] );
+	} );
+
+	grunt.registerTask( 'lint', [
+		'jsonlint',
+		'markdownlint'
+	] );
+	grunt.registerTask( 'test', [
+		'lint'
+	] );
+	grunt.registerTask( 'default', [
+		'test'
+	] );
 };
