@@ -1,0 +1,4 @@
+.*.swp
+*~
+/composer.lock
+/package-lock.json
