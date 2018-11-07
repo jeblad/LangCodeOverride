@@ -1,0 +1,37 @@
+{
+	"name": "LangCodeOverride",
+	"version": "0.0.0",
+	"author": [
+		"John Erling Blad"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:LangCodeOverride",
+	"descriptionmsg": "lang-code-override-desc",
+	"license-name": "GPL-3.0",
+	"type": "other",
+	"AutoloadClasses": {
+		"LangCodeOverride\\Hooks":
+			"includes/Hooks.php",
+
+		"Pickle\\Tests\\HooksTestCase":
+			"tests/phpunit/includes/Hooks/HooksTestCase.php"
+	},
+	"config": {
+		"_prefix": "wgLangCodeOverride",
+		"Setup": "implicit",
+		"Override": {
+				"projects": {
+          "wiki" : {
+            "no": "nb"
+            }
+        }
+			},
+
+	},
+	"callback": "LangCodeOverride\\Hooks::onSetup",
+	"Hooks": {
+		"SpecTesterGadgets": [
+			"LangCodeOverride\\Hooks::onSkinTemplateGetLanguageLink."
+		],
+	},
+	"manifest_version": 1
+}
