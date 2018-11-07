@@ -1,2 +1,3 @@
 # LangCodeOverride
-Mediawiki extension to override language codes
+
+Mediawiki extension to override language codes.
