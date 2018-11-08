@@ -163,13 +163,18 @@ class Hooks {
 			}
 		}
 
-		if ( $group === null ) {
+		if ( $group === null
+			or !array_key_exists( $group, $wgLCOverrideCodes )
+		) {
 			return true;
 		}
 
 		$overrideCodesForSite = $wgLCOverrideCodes[ $group ];
 
-		if ( $overrideCodesForSite === null ) {
+		if ( $overrideCodesForSite === null
+			or !array_key_exists( 'lang', $languageLink )
+			or !array_key_exists( $languageLink['lang'], $overrideCodesForSite )
+		) {
 			return true;
 		}
 
