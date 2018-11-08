@@ -169,22 +169,26 @@ class Hooks {
 							$group = $wgLCOverrideGroup;
 						}
 					} else {
-						wfDebugLog( 'LangCodeOverride', "Could not find Site." );
+						wfDebugLog( 'LangCodeOverride', "Could not find Site for $dbname." );
 					}
 				} else {
-					wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup." );
+					wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup for $dbname." );
 				}
 			} else {
-				wfDebugLog( 'LangCodeOverride', "Could not find Services." );
+				wfDebugLog( 'LangCodeOverride', "Could not find Services for $dbname." );
 			}
 		} else {
 			wfDebugLog( 'LangCodeOverride', "Could not find DBname." );
 		}
 
-		if ( $group === null
-			or !array_key_exists( $group, $wgLCOverrideCodes )
-		) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid group." );
+
+		if ( $group === null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a group name, using default." );
+			$group = $wgLCOverrideGroup;
+		}
+
+		if ( !array_key_exists( $group, $wgLCOverrideCodes ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid group name." );
 			return true;
 		}
 
