@@ -11,7 +11,7 @@ class Hooks {
 
 	protected static $wgServices = null;
 
-	public static getSiteLookup() {
+	public static function getSiteLookup() {
 		if ( self::$mServices === null ) {
 			self::$mSiteLookup = \MediaWiki\MediaWikiServices::newInstance();
 		}
@@ -164,7 +164,7 @@ class Hooks {
 		$group = $wgLCOverrideGroup;
 		$dbname = $languageLinkTitle->getTransWikiID();
 
-		
+
 		if ( $dbname !== false ) {
 			$site = self::getSiteLookup()->getSite( $dbname );
 			if ( $site !== null ) {
