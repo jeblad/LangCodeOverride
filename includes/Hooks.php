@@ -187,7 +187,7 @@ class Hooks {
 			$group = $wgLCOverrideGroup;
 		}
 
-		if ( !array_key_exists( $group, $wgLCOverrideCodes ) {
+		if ( !array_key_exists( $group, $wgLCOverrideCodes ) ) {
 			wfDebugLog( 'LangCodeOverride', "Could not find a valid group name." );
 			return true;
 		}
