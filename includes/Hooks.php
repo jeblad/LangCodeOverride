@@ -134,9 +134,44 @@ class Hooks {
 	}
 
 	/**
-	 * Handler for SkinTemplateGetLanguageLink
-	 *
+	 * Get group for the given database id
+	 * 
 	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 * 
+	 * @param string $dbname the identifier for the database
+	 * @return string|null the group for the database
+	 */
+	public static function getGroup( $dbname ) {
+		if ( !$dbname ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname." );
+			return null;
+		}
+
+		$services = \MediaWiki\MediaWikiServices::getInstance();
+		if ( $services !== null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find Services for $dbname." );
+			return null;
+		}
+
+		$siteLookup = $services->getSiteLookup();
+		if ( $siteLookup !== null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup for $dbname." );
+			return null;
+		}
+
+		$site = $siteLookup->getSite( $dbname );
+		if ( $site !== null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find Site for $dbname." );
+			return null;
+		}
+
+		$group = $site->getGroup();
+
+		return $group;
+	}
+
+	/**
+	 * Handler for SkinTemplateGetLanguageLink
 	 *
 	 * @param array &$languageLink containing data about the link
 	 * @param Title $languageLinkTitle object for the external language link
@@ -153,34 +188,8 @@ class Hooks {
 		global $wgLCOverrideGroup;
 		global $wgLCOverrideCodes;
 
-		$group = null;
-
 		$dbname = $languageLinkTitle->getTransWikiID();
-		if ( $dbname !== false ) {
-			$services = \MediaWiki\MediaWikiServices::getInstance();
-			if ( $services !== null ) {
-				$siteLookup = $services->getSiteLookup();
-				if ( $siteLookup !== null ) {
-					$site = $siteLookup->getSite( $dbname );
-					if ( $site !== null ) {
-						$group = $site->getGroup();
-						if ( $group === null ) {
-							wfDebugLog( 'LangCodeOverride', "Could not find a valid group name, using default." );
-							$group = $wgLCOverrideGroup;
-						}
-					} else {
-						wfDebugLog( 'LangCodeOverride', "Could not find Site for $dbname." );
-					}
-				} else {
-					wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup for $dbname." );
-				}
-			} else {
-				wfDebugLog( 'LangCodeOverride', "Could not find Services for $dbname." );
-			}
-		} else {
-			wfDebugLog( 'LangCodeOverride', "Could not find DBname." );
-		}
-
+		$group = getGroup( $dbname );
 
 		if ( $group === null ) {
 			wfDebugLog( 'LangCodeOverride', "Could not find a group name, using default." );
