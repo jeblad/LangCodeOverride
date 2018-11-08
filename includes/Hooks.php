@@ -189,7 +189,7 @@ class Hooks {
 		global $wgLCOverrideCodes;
 
 		$dbname = $languageLinkTitle->getTransWikiID();
-		$group = getGroup( $dbname );
+		$group = self::getGroup( $dbname );
 
 		if ( $group === null ) {
 			wfDebugLog( 'LangCodeOverride', "Could not find a group name, using default." );
