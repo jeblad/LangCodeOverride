@@ -191,7 +191,7 @@ class Hooks {
 			return true;
 		}
 
-		wfDebugLog( 'LangCodeOverride', "Found a language code to override: $languageLink['lang'] &rarr; $overrideCode" );
+		wfDebugLog( 'LangCodeOverride', "Found a language code to override: $languageLink[lang] &rarr; $overrideCode" );
 
 		self::overrideLanguageLink(
 			$languageLink,
