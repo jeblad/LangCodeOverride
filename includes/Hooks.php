@@ -9,11 +9,11 @@ namespace LangCodeOverride;
  */
 class Hooks {
 
-	protected static $wgServices;
+	protected static $wgServices = null;
 
 	public static function getSiteLookup() {
 		if ( self::$mServices === null ) {
-			self::$mSiteLookup = \MediaWiki\MediaWikiServices::newInstance();
+			self::$mServices = \MediaWiki\MediaWikiServices::newInstance();
 		}
 		return self::$mServices->getSiteLookup();
 
