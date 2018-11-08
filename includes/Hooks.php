@@ -9,16 +9,6 @@ namespace LangCodeOverride;
  */
 class Hooks {
 
-	protected static $mServices = null;
-
-	public static function getSiteLookup() {
-		if ( self::$mServices === null ) {
-			self::$mServices = \MediaWiki\MediaWikiServices::newInstance();
-		}
-		return self::$mServices->getSiteLookup();
-
-	}
-
 	/**
 	 * Setup for the extension
 	 */
@@ -163,10 +153,11 @@ class Hooks {
 
 		$group = $wgLCOverrideGroup;
 		$dbname = $languageLinkTitle->getTransWikiID();
-
+		
 
 		if ( $dbname !== false ) {
-			$site = self::getSiteLookup()->getSite( $dbname );
+			$services = \MediaWiki\MediaWikiServices::getInstance();
+			$site = $services->getSiteLookup()->getSite( $dbname );
 			if ( $site !== null ) {
 				$group = $site->getGroup();
 			}
