@@ -154,44 +154,56 @@ class Hooks {
 		global $wgLCOverrideCodes;
 
 		$group = null;
-		$dbname = $languageLinkTitle->getTransWikiID();
-		
 
+		$dbname = $languageLinkTitle->getTransWikiID();
 		if ( $dbname !== false ) {
 			$services = \MediaWiki\MediaWikiServices::getInstance();
-			$site = $services->getSiteLookup()->getSite( $dbname );
-			if ( $site !== null ) {
-				$group = $site->getGroup();
+			if ( $services !== null ) {
+				$siteLookup = $services->getSiteLookup();
+				if ( $siteLookup !== null ) {
+					$site = $siteLookup->getSite( $dbname );
+					if ( $site === null ) {
+						$group = $site->getGroup();
+						if ( $group !== null ) {
+							wfDebugLog( 'LangCodeOverride', "Could not find a valid group name, using default." );
+							$group = $wgLCOverrideGroup;
+						}
+					} else {
+						wfDebugLog( 'LangCodeOverride', "Could not find Site." );
+					}
+				} else {
+					wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup." );
+				}
+			} else {
+				wfDebugLog( 'LangCodeOverride', "Could not find Services." );
 			}
-		}
-
-		if ( $group === null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid group name, using default." );
-			$group = $wgLCOverrideGroup;
+		} else {
+			wfDebugLog( 'LangCodeOverride', "Could not find DBname." );
 		}
 
 		if ( $group === null
 			or !array_key_exists( $group, $wgLCOverrideCodes )
 		) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid group." );
 			return true;
 		}
 
 		$overrideCodesForSite = $wgLCOverrideCodes[ $group ];
-
 		if ( $overrideCodesForSite === null
 			or !array_key_exists( 'lang', $languageLink )
 			or !array_key_exists( $languageLink['lang'], $overrideCodesForSite )
 		) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a override group." );
 			return true;
 		}
 
 		$overrideCode = $overrideCodesForSite[ $languageLink['lang'] ];
-
 		if ( $overrideCode === null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a override code." );
 			return true;
 		}
 
-		wfDebugLog( 'LangCodeOverride', "Found a language code to override: $languageLink[lang] &rarr; $overrideCode" );
+		wfDebugLog( 'LangCodeOverride', "Overrides language code: $languageLink[lang] → $overrideCode" );
 
 		self::overrideLanguageLink(
 			$languageLink,
