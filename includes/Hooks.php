@@ -142,8 +142,16 @@ class Hooks {
 	 * @return string|null the group for the database
 	 */
 	public static function getGroup( $dbname ) {
-		if ( !$dbname ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname." );
+		if ( $dbname === null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (null)." );
+			return null;
+		}
+		if ( $dbname === false ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (false)." );
+			return null;
+		}
+		if ( $dbname === "" ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (empty)." );
 			return null;
 		}
 
