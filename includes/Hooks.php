@@ -162,9 +162,9 @@ class Hooks {
 				$siteLookup = $services->getSiteLookup();
 				if ( $siteLookup !== null ) {
 					$site = $siteLookup->getSite( $dbname );
-					if ( $site === null ) {
+					if ( $site !== null ) {
 						$group = $site->getGroup();
-						if ( $group !== null ) {
+						if ( $group === null ) {
 							wfDebugLog( 'LangCodeOverride', "Could not find a valid group name, using default." );
 							$group = $wgLCOverrideGroup;
 						}
