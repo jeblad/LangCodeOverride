@@ -16,9 +16,9 @@
 	},
 	"config": {
 		"_prefix": "wgLCOverride",
-		"Setup": "implicit",
+		"Group": "wikipedia",
 		"Codes": {
-			"Wikipedia" : {
+			"wikipedia" : {
 				"no": "nb"
 			}
 		}
