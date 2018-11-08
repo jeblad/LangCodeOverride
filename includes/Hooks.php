@@ -136,6 +136,8 @@ class Hooks {
 	/**
 	 * Handler for SkinTemplateGetLanguageLink
 	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 *
 	 * @param array &$languageLink containing data about the link
 	 * @param Title $languageLinkTitle object for the external language link
 	 * @param Title $title object for the page the link belongs to
@@ -151,7 +153,7 @@ class Hooks {
 		global $wgLCOverrideGroup;
 		global $wgLCOverrideCodes;
 
-		$group = $wgLCOverrideGroup;
+		$group = null;
 		$dbname = $languageLinkTitle->getTransWikiID();
 		
 
@@ -161,6 +163,11 @@ class Hooks {
 			if ( $site !== null ) {
 				$group = $site->getGroup();
 			}
+		}
+
+		if ( $group !== null ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a valid group name, using default." );
+			$group = $wgLCOverrideGroup;
 		}
 
 		if ( $group === null
@@ -183,6 +190,8 @@ class Hooks {
 		if ( $overrideCode === null ) {
 			return true;
 		}
+
+		wfDebugLog( 'LangCodeOverride', "Found a language code to override: $languageLink['lang'] &rarr; $overrideCode" );
 
 		self::overrideLanguageLink(
 			$languageLink,
