@@ -17,8 +17,8 @@
 	"config": {
 		"_prefix": "wgLangCodeOverride",
 		"Setup": "implicit",
-		"Override": {
-			"wiki" : {
+		"Codes": {
+			"Wikipedia" : {
 				"no": "nb"
 			}
 		}
