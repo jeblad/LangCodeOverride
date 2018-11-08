@@ -9,7 +9,7 @@ namespace LangCodeOverride;
  */
 class Hooks {
 
-	protected static $wgServices = null;
+	protected static $wgServices;
 
 	public static function getSiteLookup() {
 		if ( self::$mServices === null ) {
