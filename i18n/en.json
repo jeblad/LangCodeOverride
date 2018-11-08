@@ -4,5 +4,5 @@
 			"Jeblad"
 		]
 	},
-	"lang-code-override-desc": "Adds language code overrides for wikis"
+	"lang-code-override-desc": "Adds override for the code used for language links"
 }
