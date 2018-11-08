@@ -31,11 +31,24 @@ class Hooks {
 	 * Override the language link
 	 * This tries to mimic the inner actions of SkinTemplate::getLanguages()
 	 * 
+	 * Some consequences of mimicing existing code
+	 * 
+	 * An formal parameter is passed on, which is never used.
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameters)
+	 * 
+	 * A very long variable name is used, it could be dropped, chose to keep it.
+	 * @SuppressWarnings(PHPMD.LongVariable)
+	 * 
+	 * The original code uses else clauses, kept to make code similar.
+	 * @SuppressWarnings(PHPMD.ElseExpression)
+	 * 
 	 * @param array &$languageLink containing data about the link
 	 * @param string $overrideLangCode the language code to use
 	 * @param Title $languageLinkTitle object for the external language link
 	 * @param Title $title object for the page the link belongs to
 	 * @param OutputPage $outputPage for the page the link belongs to
+	 * @param Language $language for testing purposes
+	 * @param LanguageCode $languageCode for testing purposes
 	 */
 	public static function overrideLanguageLink(
 		&$languageLink,
