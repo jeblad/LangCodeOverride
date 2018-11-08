@@ -15,7 +15,7 @@
 			"tests/phpunit/includes/Hooks/HooksTestCase.php"
 	},
 	"config": {
-		"_prefix": "wgLangCodeOverride",
+		"_prefix": "wgLCOverride",
 		"Setup": "implicit",
 		"Codes": {
 			"Wikipedia" : {

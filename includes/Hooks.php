@@ -136,9 +136,9 @@ class Hooks {
 		$output
 	) {
 		global $wgSitename;
-		global $wgLanguageCodeOverrideCodes;
+		global $wgLCOverrideCodes;
 
-		$overrideCodesForSite = $wgLanguageCodeOverrideCodes[ $wgSitename ];
+		$overrideCodesForSite = $wgLCOverrideCodes[ $wgSitename ];
 
 		if ( $overrideCodesForSite === null ) {
 			return true;
