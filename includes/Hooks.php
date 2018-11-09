@@ -197,6 +197,8 @@ class Hooks {
 		global $wgLCOverrideCodes;
 
 		$dbname = $languageLinkTitle->getTransWikiID();
+		wfDebugLog( 'LangCodeOverride', "Get dbname $dbname." );
+		wfDebugLog( 'LangCodeOverride', "Get dbname title " . $title->getTransWikiID());
 		$group = self::getGroup( $dbname );
 
 		if ( $group === null ) {
