@@ -27,16 +27,10 @@ $wgGroupPermissions['sysop']['interwiki'] = true;
 $wgDebugComments = true;
 ```
 
-Populate the interwiki table by reusing the data from [English Wikipedia](https://en.wikipedia.org). The script is part of the [Extension:WikimediaMaintenance](https://www.mediawiki.org/wiki/Extension:WikimediaMaintenance).
+Make sure the `$wgDBname` has an entry in the sites table.
+
+A Vagrant box will have a `$wgDBname` of `wiki`, so create a site entry
 
 ```bash
-vagrant ssh
-php maintenance/populateInterwiki.php --source https://en.wikipedia.org/w/api.php
-```
-
-Populate the sites table by reusing the data from [Meta Wikimedia](https://meta.wikimedia.org/). The script is part of the [Extension:WikimediaSites](https://www.mediawiki.org/wiki/Extension:WikimediaSites).
-
-```bash
-vagrant ssh
-php maintenance/populateSites.php --force-protocol https
+php maintenance/addSite.php wiki wiki
 ```
