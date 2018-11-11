@@ -34,3 +34,19 @@ A Vagrant box will have a `$wgDBname` of `wiki`, so create a site entry
 ```bash
 php maintenance/addSite.php wiki wiki
 ```
+
+Make sure to populate the interwiki table.
+
+```bash
+php maintenance/populateInterwiki.php --source https://en.wikipedia.org/w/api.php
+```
+
+Verify that the config in the extension.json is sufficient.
+
+```bash
+  "Codes": {
+    "wiki" : {
+      "no": "nb"
+    }
+  }
+```
