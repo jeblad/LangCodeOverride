@@ -2,6 +2,8 @@
 
 namespace LangCodeOverride;
 
+use \MediaWiki\MediaWikiServices;
+
 /**
  * Hook handlers for the LangCodeOverride extension
  *
@@ -16,7 +18,7 @@ class Hooks {
 		global $wgDebugComments;
 
 		// turn on comments while in development
-		$wgDebugComments = true;
+		//$wgDebugComments = true;
 	}
 
 	/**
@@ -139,37 +141,20 @@ class Hooks {
 	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 * 
 	 * @param string $dbname the identifier for the database
+	 * @param \MediaWiki\MediaWikiServices $services the provider
 	 * @return string|null the group for the database
 	 */
-	public static function getGroup( $dbname ) {
-		if ( $dbname === null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (null)." );
-			return null;
-		}
-		if ( $dbname === false ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (false)." );
-			return null;
-		}
-		if ( $dbname === "" ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid DBname (empty)." );
-			return null;
-		}
-
-		$services = \MediaWiki\MediaWikiServices::getInstance();
-		if ( $services !== null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find Services for $dbname." );
-			return null;
-		}
-
-		$siteLookup = $services->getSiteLookup();
-		if ( $siteLookup !== null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find SiteLookup for $dbname." );
+	public static function getGroup(
+		$dbname,
+		$services = \MediaWiki\MediaWikiServices::class
+	) {
+		$siteLookup = $services::getInstance()->getSiteLookup();
+		if ( $siteLookup === null ) {
 			return null;
 		}
 
 		$site = $siteLookup->getSite( $dbname );
-		if ( $site !== null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find Site for $dbname." );
+		if ( $site === null ) {
 			return null;
 		}
 
@@ -193,40 +178,47 @@ class Hooks {
 		$title,
 		$output
 	) {
-		global $wgLCOverrideGroup;
+		global $wgDBname;
 		global $wgLCOverrideCodes;
 
-		$dbname = $languageLinkTitle->getTransWikiID();
-		wfDebugLog( 'LangCodeOverride', "Get dbname $dbname." );
-		wfDebugLog( 'LangCodeOverride', "Get dbname title " . $title->getTransWikiID());
-		$group = self::getGroup( $dbname );
-
+		// This makes the assumption that $wgDBname is the sole identification
+		// of a language specific database, that is no table prefix in use.
+		// It also imply that $wgDBname can change during normal operation
+		// as long as the interpretation of the previous name does not change.
+		static $group = null;
 		if ( $group === null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a group name, using default." );
-			$group = $wgLCOverrideGroup;
+			$group = self::getGroup( $wgDBname );
 		}
 
 		if ( !array_key_exists( $group, $wgLCOverrideCodes ) ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a valid group name." );
+			wfDebugLog( 'LangCodeOverride', "Could not find a '$group' key in override structure." );
 			return true;
 		}
 
-		$overrideCodesForSite = $wgLCOverrideCodes[ $group ];
-		if ( $overrideCodesForSite === null
-			or !array_key_exists( 'lang', $languageLink )
-			or !array_key_exists( $languageLink['lang'], $overrideCodesForSite )
-		) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a override group." );
+		if ( !array_key_exists( 'lang', $languageLink ) ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a 'lang' key in link structure." );
 			return true;
 		}
 
-		$overrideCode = $overrideCodesForSite[ $languageLink['lang'] ];
-		if ( $overrideCode === null ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a override code." );
+		$langCode = $languageLink['lang'];
+		if ( !$langCode ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a value for 'lang' key in link structure." );
 			return true;
 		}
 
-		wfDebugLog( 'LangCodeOverride', "Overrides language code: $languageLink[lang] → $overrideCode" );
+		$overrides = $wgLCOverrideCodes[$group];
+		if ( !$overrides ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find an array for '$group' key in override structure." );
+			return true;
+		}
+
+		if ( !array_key_exists( $langCode, $overrides ) ) {
+			wfDebugLog( 'LangCodeOverride', "Could not find a '$langCode' key in override structure." );
+			return true;
+		}
+
+		$overrideCode = $overrides[$langCode];
+		wfDebugLog( 'LangCodeOverride', "Overrides language code: $langCode → $overrideCode" );
 
 		self::overrideLanguageLink(
 			$languageLink,
