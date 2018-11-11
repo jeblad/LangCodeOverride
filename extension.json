@@ -22,6 +22,11 @@
 			}
 		}
 	},
+	"MessagesDirs": {
+		"LangCodeOverride": [
+			"i18n"
+		]
+	},
 	"callback": "LangCodeOverride\\Hooks::onExtensionSetup",
 	"Hooks": {
 		"SkinTemplateGetLanguageLink": [
