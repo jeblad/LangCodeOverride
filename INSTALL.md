@@ -11,7 +11,7 @@ git clone --recursive https://gerrit.wikimedia.org/r/mediawiki/vagrant .
 ./setup.sh
 vagrant up
 cd mediawiki/extensions
-git clone https://github.com/jeblad/LangCodeOverride.git
+git clone git@github.com:jeblad/LangCodeOverride.git
 ```
 
 Add a line to `LocalSettings.php` for loading of the extension
