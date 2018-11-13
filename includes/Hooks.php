@@ -208,50 +208,45 @@ class Hooks {
 		static $group = null;
 		if ( $group === null ) {
 			$group = self::getGroup( $wgDBname );
+			if ( $group === null ) {
+				wfDebugLog( 'LangCodeOverride',
+					"Could not find a valid '$group' entry at services." );
+			}
 		}
 
-		if ( !array_key_exists( $group, $wgLCOverrideCodes ) ) {
-			wfDebugLog( 'LangCodeOverride',
-				"Could not find a '$group' key in override structure." );
-			return true;
+		// With a fixed $group, then the $overrides will also be fixed. That is
+		// the overrides for a given $wgDBname will never change.
+		static $overrides = null;
+		if ( $overrides === null ) {
+			$overrides = self::findValue( $group, $wgLCOverrideCodes );
+			if ( $overrides === null ) {
+				wfDebugLog( 'LangCodeOverride',
+					"Could not find a '$group' key among override structures." );
+			}
 		}
 
-		if ( !array_key_exists( 'lang', $languageLink ) ) {
-			wfDebugLog( 'LangCodeOverride',
-				"Could not find a 'lang' key in link structure." );
-			return true;
-		}
-
-		$langCode = $languageLink['lang'];
-		if ( !$langCode ) {
+		// Attempt to find the language code…
+		$langCode = self::findValue( 'lang', $languageLink );
+		if ( $overrides === null ) {
 			wfDebugLog( 'LangCodeOverride',
 				"Could not find a value for 'lang' key in link structure." );
-			return true;
 		}
 
-		$overrides = $wgLCOverrideCodes[$group];
-		if ( !$overrides ) {
+		// … and then find a matching override code…
+		$overrideCode = self::findValue( $langCode, $overrides );
+		if ( $overrides === null ) {
 			wfDebugLog( 'LangCodeOverride',
-				"Could not find an array for '$group' key in override structure." );
-			return true;
+				"Could not find a value for '$langCode' key in override structure." );
 		}
 
-		if ( !array_key_exists( $langCode, $overrides ) ) {
-			wfDebugLog( 'LangCodeOverride',
-				"Could not find a '$langCode' key in override structure." );
-			return true;
-		}
-
-		$overrideCode = $overrides[$langCode];
-		wfDebugLog( 'LangCodeOverride',
-			"Overrides language code: $langCode → $overrideCode" );
-
+		// … and if so override the language link
 		self::overrideLanguageLink(
 			$languageLink,
 			$overrideCode,
 			$languageLinkTitle,
 			$title,
-			$output );
+			$output
+		);
 
 		return true;
 	}
