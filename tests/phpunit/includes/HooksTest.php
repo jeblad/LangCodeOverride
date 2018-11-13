@@ -157,4 +157,26 @@ class HooksTest extends \MediaWikiTestCase {
 		}
 		$this->assertRegExp( $title, $languageLink['title'] );
 	}
+
+
+	public function provideFindValue() {
+		return [
+			[ null, 'foo', null ],
+			[ null, null, [ 'foo' => 'ping', 'bar' => 'pong' ] ],
+			[ 'ping', 'foo', [ 'foo' => 'ping', 'bar' => 'pong' ] ],
+			[ null, null, [ 'foo' => 'ping', 'bar' => 'pong' ] ],
+			[ [ 'ping' ], 'foo', [ 'foo' => [ 'ping' ], 'bar' => 'pong' ] ],
+			[ null, null, [ 'foo' => [ 'ping' ], 'bar' => 'pong' ] ],
+			[ null, 'foo', [ 'foo' => null, 'bar' => 'pong' ] ],
+			[ [ null ], 'foo', [ 'foo' => [ null ], 'bar' => 'pong' ] ],
+		];
+	}
+
+	/**
+	 * @dataProvider provideFindValue
+	 */
+	public function testFindValue( $expect, $needle, $haystack ) {
+		$this->assertEquals( $expect, Hooks::findValue( $needle, $haystack ) );
+	}
+
 }

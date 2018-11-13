@@ -158,6 +158,32 @@ class Hooks {
 	}
 
 	/**
+	 * Find value give a needle and a heystack
+	 *
+	 * @param string|null $needle to find
+	 * @param array|null $heystack to search
+	 * @return any|null whats found
+	 */
+	public static function findValue( $needle, $heystack ) {
+
+		if ( $needle === null ) {
+			return null;
+		}
+
+		if ( $heystack === null ) {
+			return null;
+		}
+
+		if ( !array_key_exists( $needle, $heystack ) ) {
+			return null;
+		}
+
+		$value = $heystack[$needle];
+
+		return $value;
+	}
+
+	/**
 	 * Handler for SkinTemplateGetLanguageLink
 	 *
 	 * @param array &$languageLink containing data about the link
