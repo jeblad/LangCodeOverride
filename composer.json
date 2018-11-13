@@ -1,0 +1,71 @@
+{
+	"name": "jeblad/lang-code-override",
+	"type": "mediawiki-extension",
+	"description": "Override of the language codes for some of the language links.",
+	"keywords": [
+		"wiki",
+		"MediaWiki",
+		"extension",
+		"testing",
+		"LangCodeOverride"
+	],
+	"homepage": "https://www.mediawiki.org/wiki/Extension:LangCodeOverride",
+	"license": "GPL-3.0",
+	"authors": [
+		{
+			"name": "John Erling Blad",
+			"email": "jeblad@gmail.com",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"wiki": "https://www.mediawiki.org/wiki/Extension:LangCodeOverride",
+		"forum": "https://www.mediawiki.org/wiki/Extension_talk:LangCodeOverride",
+		"source": "https://github.com/jeblad/LangCodeOverride/issues",
+		"issues": "https://github.com/jeblad/LangCodeOverride/issues",
+		"irc": "irc://irc.freenode.org/mediawiki"
+	},
+	"config": {
+		"prepend-autoloader": false,
+		"optimize-autoloader": true
+	},
+	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "0.9.2",
+		"mediawiki/mediawiki-codesniffer": "@stable",
+		"phpunit/phpunit": "@stable",
+		"phpmd/phpmd" : "@stable",
+		"phpspec/prophecy": "~1.0",
+		"liuggio/fastest": "~1.4",
+		"jakub-onderka/php-console-highlighter": "0.3.2"
+	},
+	"scripts": {
+		"fix": [
+			"phpcbf"
+		],
+		"unit": [
+			"php ../../tests/phpunit/phpunit.php --wiki wiki --group LangCodeOverride"
+		],
+		"codesize": [
+			"phpmd ./includes/ text codesize",
+			"phpmd ./tests/ text codesize"
+		],
+		"mess": [
+			"phpmd ./includes/ text phpmd.xml",
+			"phpmd ./tests/ text phpmd.xml"
+		],
+		"test": [
+			"phpcs -p -s",
+			"parallel-lint . --exclude vendor --exclude node_modules"
+		],
+		"export": [
+			"php ../../maintenance/dumpBackup.php --current --pagelist=PAGELIST --output=file:pages.xml"
+		],
+		"import": [
+			"php ../../maintenance/importDump.php pages.xml"
+		]
+	},
+	"require": {
+		"php": ">=7.0",
+		"composer/installers": ">=1.0"
+	}
+}
