@@ -2,8 +2,6 @@
 
 namespace LangCodeOverride;
 
-use \MediaWiki\MediaWikiServices;
-
 /**
  * Hook handlers for the LangCodeOverride extension
  *
@@ -15,10 +13,7 @@ class Hooks {
 	 * Setup for the extension
 	 */
 	public static function onExtensionSetup() {
-		global $wgDebugComments;
-
-		// turn on comments while in development
-		//$wgDebugComments = true;
+		// empty
 	}
 
 	/**
@@ -28,27 +23,26 @@ class Hooks {
 		$files[] = __DIR__ . '/../tests/phpunit/';
 	}
 
-
 	/**
 	 * Override the language link
 	 * This tries to mimic the inner actions of SkinTemplate::getLanguages()
-	 * 
+	 *
 	 * Some consequences of mimicing existing code
-	 * 
+	 *
 	 * An formal parameter is passed on, which is never used.
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameters)
-	 * 
+	 *
 	 * A very long variable name is used, it could be dropped, chose to keep it.
 	 * @SuppressWarnings(PHPMD.LongVariable)
-	 * 
+	 *
 	 * The original code uses else clauses, kept to make code similar.
 	 * @SuppressWarnings(PHPMD.ElseExpression)
-	 * 
+	 *
 	 * @param array &$languageLink containing data about the link
 	 * @param string $overrideLangCode the language code to use
 	 * @param Title $languageLinkTitle object for the external language link
 	 * @param Title $title object for the page the link belongs to
-	 * @param OutputPage $outputPage for the page the link belongs to
+	 * @param OutputPage $output for the page the link belongs to
 	 * @param Language $language for testing purposes
 	 * @param LanguageCode $languageCode for testing purposes
 	 */
@@ -57,11 +51,11 @@ class Hooks {
 		$overrideLangCode,
 		$languageLinkTitle,
 		$title,
-		$outputPage,
+		$output,
 		$language = \Language::class,
 		$languageCode = \LanguageCode::class
 	) {
-		$skin = $outputPage->getContext()->getSkin();
+		$skin = $output->getContext()->getSkin();
 		$userLang = $skin->getLanguage();
 
 		$languageLinkText = $languageLinkTitle->getText();
@@ -137,9 +131,9 @@ class Hooks {
 
 	/**
 	 * Get group for the given database id
-	 * 
+	 *
 	 * @SuppressWarnings(PHPMD.StaticAccess)
-	 * 
+	 *
 	 * @param string $dbname the identifier for the database
 	 * @param \MediaWiki\MediaWikiServices $services the provider
 	 * @return string|null the group for the database
@@ -169,7 +163,7 @@ class Hooks {
 	 * @param array &$languageLink containing data about the link
 	 * @param Title $languageLinkTitle object for the external language link
 	 * @param Title $title object for the page the link belongs to
-	 * @param OutputPage $outputPage for the page the link belongs to
+	 * @param OutputPage $output for the page the link belongs to
 	 * @return bool
 	 */
 	public static function onSkinTemplateGetLanguageLink(
@@ -191,34 +185,40 @@ class Hooks {
 		}
 
 		if ( !array_key_exists( $group, $wgLCOverrideCodes ) ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a '$group' key in override structure." );
+			wfDebugLog( 'LangCodeOverride',
+				"Could not find a '$group' key in override structure." );
 			return true;
 		}
 
 		if ( !array_key_exists( 'lang', $languageLink ) ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a 'lang' key in link structure." );
+			wfDebugLog( 'LangCodeOverride',
+				"Could not find a 'lang' key in link structure." );
 			return true;
 		}
 
 		$langCode = $languageLink['lang'];
 		if ( !$langCode ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a value for 'lang' key in link structure." );
+			wfDebugLog( 'LangCodeOverride',
+				"Could not find a value for 'lang' key in link structure." );
 			return true;
 		}
 
 		$overrides = $wgLCOverrideCodes[$group];
 		if ( !$overrides ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find an array for '$group' key in override structure." );
+			wfDebugLog( 'LangCodeOverride',
+				"Could not find an array for '$group' key in override structure." );
 			return true;
 		}
 
 		if ( !array_key_exists( $langCode, $overrides ) ) {
-			wfDebugLog( 'LangCodeOverride', "Could not find a '$langCode' key in override structure." );
+			wfDebugLog( 'LangCodeOverride',
+				"Could not find a '$langCode' key in override structure." );
 			return true;
 		}
 
 		$overrideCode = $overrides[$langCode];
-		wfDebugLog( 'LangCodeOverride', "Overrides language code: $langCode → $overrideCode" );
+		wfDebugLog( 'LangCodeOverride',
+			"Overrides language code: $langCode → $overrideCode" );
 
 		self::overrideLanguageLink(
 			$languageLink,
