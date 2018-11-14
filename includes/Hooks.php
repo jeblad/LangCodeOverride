@@ -158,27 +158,27 @@ class Hooks {
 	}
 
 	/**
-	 * Find value give a needle and a heystack
+	 * Find value give a needle and a haystack
 	 *
 	 * @param string|null $needle to find
-	 * @param array|null $heystack to search
+	 * @param array|null $haystack to search
 	 * @return any|null whats found
 	 */
-	public static function findValue( $needle, $heystack ) {
+	public static function findValue( $needle, $haystack ) {
 
 		if ( $needle === null ) {
 			return null;
 		}
 
-		if ( $heystack === null ) {
+		if ( $haystack === null ) {
 			return null;
 		}
 
-		if ( !array_key_exists( $needle, $heystack ) ) {
+		if ( !array_key_exists( $needle, $haystack ) ) {
 			return null;
 		}
 
-		$value = $heystack[$needle];
+		$value = $haystack[$needle];
 
 		return $value;
 	}
