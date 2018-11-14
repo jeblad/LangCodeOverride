@@ -76,7 +76,12 @@ class HooksTest extends \MediaWikiTestCase {
 	 * @param Title $title object for the page the link belongs to
 	 * @param OutputPage $outputPage for the page the link belongs to
 	 */
-	public function testOverrideLanguageLink( $overrideCode, $link, $text = null, $title = null ) {
+	public function testOverrideLanguageLink(
+		$overrideCode,
+		$link,
+		$text = null,
+		$title = null
+	) {
 		$linkedTitle = \Title::newFromText( $link );
 
 		$output = $this->newOutputPage();
@@ -162,7 +167,7 @@ class HooksTest extends \MediaWikiTestCase {
 	}
 
 	/**
-	 * @dataProvider provideOverrideLanguageLink
+	 * @_dataProvider provideOverrideLanguageLink
 	 *
 	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 *
@@ -172,7 +177,12 @@ class HooksTest extends \MediaWikiTestCase {
 	 * @param Title $title object for the page the link belongs to
 	 * @param OutputPage $outputPage for the page the link belongs to
 	 */
-	public function _testOnSkinTemplateGetLanguageLink( $overrideCode, $link, $text = null, $title = null ) {
+	public function noTestOnSkinTemplateGetLanguageLink(
+		$overrideCode,
+		$link,
+		$text = null,
+		$title = null
+	) {
 		$linkedTitle = \Title::newFromText( $link );
 
 		$output = $this->newOutputPage();

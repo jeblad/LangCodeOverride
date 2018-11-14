@@ -23,33 +23,52 @@ class Hooks {
 		$files[] = __DIR__ . '/../tests/phpunit/';
 	}
 
+	/**
+	 * Figure out which one of several possible texts to use
+	 *
+	 * @param string $langName the name to be used if exist
+	 * @param string $langCode the code to be used if exist
+	 * @param \Title $title the object to use as fallback
+	 * @return string the link text to use
+	 */
 	public static function linkText(
-		$title,
+		$langName,
 		$langCode,
-		$langName
+		\Title $title
 	) {
+		// Use the given language autonym for the link text?
 		if ( strval( $langName ) !== '' ) {
-			// Use the language autonym as display text
 			return $langName;
 		}
 
-		$displayTextMsg = wfMessage( "interlanguage-link-$langCode" );
-		if ( !$displayTextMsg->isDisabled() ) {
-			// Use custom MW message for the display text
-			return $displayTextMsg->text();
+		// Use the language code to look up the message for the link text?
+		if ( strval( $langCode ) !== '' ) {
+			$displayTextMsg = wfMessage( "interlanguage-link-$langCode" );
+			if ( !$displayTextMsg->isDisabled() ) {
+				return $displayTextMsg->text();
+			}
 		}
 
-		// we have nothing friendly to put in the title, so fall back to
+		// We have nothing friendly to put in the title, so fall back to
 		// displaying the interlanguage link itself in the link text
 		return $title->getText();
 	}
 
+	/**
+	 * Figure out which one of several possible texts to use
+	 *
+	 * @param string $langName the name to be used if exist
+	 * @param string $langCode the code to be used if exist
+	 * @param \Title $title the object to use as fallback
+	 * @return string the link title to use
+	 */
 	public static function linkTitle(
-		$title,
+		$langName,
 		$langCode,
-		$langName
+		$title
 	) {
-		if ( $langName !== '' ) {
+		// Use the given language autonym for the link title?
+		if ( strval( $langName ) !== '' ) {
 			$linkTitle = $title->getText();
 			$linkTitleMsg = ( ( $linkTitle === '' )
 				? wfMessage( 'interlanguage-link-title-langonly', $langName )
@@ -58,14 +77,17 @@ class Hooks {
 			return $linkTitleMsg->text();
 		}
 
-		$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" )->text();
-		if ( !$displayNameMsg->isDisabled() ) {
-			$displayName = $displayNameMsg->text();
-			$linkTitleMsg = ( ( $linkTitle === '' )
-				? wfMessage( 'interlanguage-link-title-nonlangonly', $displayName )
-				: wfMessage( 'interlanguage-link-title-nonlang', $linkTitle, $displayName )
-			);
-			return $linkTitleMsg->text();
+		// Use the language code to look up the message for the link title?
+		if ( strval( $langCode ) !== '' ) {
+			$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" )->text();
+			if ( !$displayNameMsg->isDisabled() ) {
+				$displayName = $displayNameMsg->text();
+				$linkTitleMsg = ( ( $linkTitle === '' )
+					? wfMessage( 'interlanguage-link-title-nonlangonly', $displayName )
+					: wfMessage( 'interlanguage-link-title-nonlang', $linkTitle, $displayName )
+				);
+				return $linkTitleMsg->text();
+			}
 		}
 
 		// we have nothing friendly to put in the title, so fall back to
@@ -94,7 +116,8 @@ class Hooks {
 		$languageLinkTitle,
 		$title,
 		$output,
-		$language = \Language::class, // for testing purposes
+		 // for testing purposes
+		$language = \Language::class,
 		$languageCode = \LanguageCode::class
 	) {
 		$skin = $output->getContext()->getSkin();
@@ -103,9 +126,9 @@ class Hooks {
 		$langName = $language::fetchLanguageName( $overrideLangCode );
 
 		$linkText = self::linkText(
-			$languageLinkTitle,
+			$skin->formatLanguageName( $langName ),
 			$overrideLangCode,
-			$skin->formatLanguageName( $langName )
+			$languageLinkTitle
 		);
 
 		// CLDR extension or similar is required to localize the language name;
@@ -116,9 +139,9 @@ class Hooks {
 		);
 
 		$linkTitle = self::linkTitle(
-			$languageLinkTitle,
+			$langLocalName,
 			$overrideLangCode,
-			$langLocalName
+			$languageLinkTitle
 		);
 
 		$langCodeBCP47 = $languageCode::bcp47( $overrideLangCode );
@@ -135,8 +158,6 @@ class Hooks {
 
 	/**
 	 * Get group for the given database id
-	 *
-	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 *
 	 * @param string $dbname the identifier for the database
 	 * @param \MediaWiki\MediaWikiServices $services the provider
@@ -169,7 +190,6 @@ class Hooks {
 	 * @return any|null whats found
 	 */
 	public static function findValue( $needle, $haystack ) {
-
 		if ( $needle === null ) {
 			return null;
 		}
