@@ -14,6 +14,8 @@ class HooksTest extends \MediaWikiTestCase {
 	/**
 	 * Create a new output page
 	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 *
 	 * Not sure if all of this is needed. It is a copy of the private method from
 	 * OutputPageTest::newInstance().\Composer\Autoload\ClassLoader
 	 *
@@ -66,6 +68,7 @@ class HooksTest extends \MediaWikiTestCase {
 	 * @dataProvider provideOverrideLanguageLink
 	 *
 	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 * @SuppressWarnings(PHPMD.ElseExpression)
 	 *
 	 * @param array &$languageLink containing data about the link
 	 * @param string $overrideLangCode the language code to use
@@ -210,6 +213,8 @@ class HooksTest extends \MediaWikiTestCase {
 
 	/**
 	 * @dataProvider provideFindValue
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 */
 	public function testFindValue( $expect, $needle, $haystack ) {
 		$this->assertEquals( $expect, Hooks::findValue( $needle, $haystack ) );

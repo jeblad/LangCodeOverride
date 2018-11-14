@@ -28,7 +28,6 @@ class Hooks {
 		$langCode,
 		$langName
 	) {
-		$linkText = $title->getText();
 		if ( strval( $langName ) !== '' ) {
 			// Use the language autonym as display text
 			return $langName;
@@ -40,7 +39,8 @@ class Hooks {
 			return $displayTextMsg->text();
 		}
 
-		// use the fallback
+		// we have nothing friendly to put in the title, so fall back to
+		// displaying the interlanguage link itself in the link text
 		return $title->getText();
 	}
 
@@ -49,9 +49,8 @@ class Hooks {
 		$langCode,
 		$langName
 	) {
-		$linkTitle = $title->getText();
-
 		if ( $langName !== '' ) {
+			$linkTitle = $title->getText();
 			$linkTitleMsg = ( ( $linkTitle === '' )
 				? wfMessage( 'interlanguage-link-title-langonly', $langName )
 				: wfMessage( 'interlanguage-link-title', $linkTitle, $langName )
@@ -61,7 +60,7 @@ class Hooks {
 
 		$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" )->text();
 		if ( !$displayNameMsg->isDisabled() ) {
-			$displayName = $siteName->text();
+			$displayName = $displayNameMsg->text();
 			$linkTitleMsg = ( ( $linkTitle === '' )
 				? wfMessage( 'interlanguage-link-title-nonlangonly', $displayName )
 				: wfMessage( 'interlanguage-link-title-nonlang', $linkTitle, $displayName )
@@ -70,8 +69,7 @@ class Hooks {
 		}
 
 		// we have nothing friendly to put in the title, so fall back to
-		// displaying the interlanguage link itself in the title text
-		// (similar to what is done in page content)
+		// displaying the interlanguage link itself in the link title
 		return $title->getInterwiki() . ":$linkTitle";
 	}
 
@@ -79,16 +77,8 @@ class Hooks {
 	 * Override the language link
 	 * This tries to mimic the inner actions of SkinTemplate::getLanguages()
 	 *
-	 * Some consequences of mimicing existing code
-	 *
 	 * An formal parameter is passed on, which is never used.
 	 * @SuppressWarnings(PHPMD.UnusedFormalParameters)
-	 *
-	 * A very long variable name is used, it could be dropped, chose to keep it.
-	 * @SuppressWarnings(PHPMD.LongVariable)
-	 *
-	 * The original code uses else clauses, kept to make code similar.
-	 * @SuppressWarnings(PHPMD.ElseExpression)
 	 *
 	 * @param array &$languageLink containing data about the link
 	 * @param string $overrideLangCode the language code to use
@@ -104,13 +94,13 @@ class Hooks {
 		$languageLinkTitle,
 		$title,
 		$output,
-		$language = \Language::class,
+		$language = \Language::class, // for testing purposes
 		$languageCode = \LanguageCode::class
 	) {
 		$skin = $output->getContext()->getSkin();
 		$userLang = $skin->getLanguage();
 
-		$langName = \Language::fetchLanguageName( $overrideLangCode );
+		$langName = $language::fetchLanguageName( $overrideLangCode );
 
 		$linkText = self::linkText(
 			$languageLinkTitle,
@@ -120,7 +110,7 @@ class Hooks {
 
 		// CLDR extension or similar is required to localize the language name;
 		// otherwise we'll end up with the autonym again.
-		$langLocalName = \Language::fetchLanguageName(
+		$langLocalName = $language::fetchLanguageName(
 			$overrideLangCode,
 			$userLang->getCode()
 		);
