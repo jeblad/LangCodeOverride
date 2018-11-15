@@ -3,7 +3,6 @@
 namespace LangCodeOverride\Tests;
 
 use \LangCodeOverride\Hooks;
-use \MediaWiki\MediaWikiServices;
 
 /**
  * @group LangCodeOverride
@@ -39,7 +38,7 @@ class HooksTest extends \MediaWikiTestCase {
 	 *
 	 * @SuppressWarnings(PHPMD.StaticAccess)
 	 */
-	function addDBDataOnce() {
+	public function addDBDataOnce() {
 		$this->configureLanguages();
 		$this->makePage( 'interlanguage-link-no', 'en', 'Fancy Norwegian' );
 		$this->makePage( 'interlanguage-link-nb', 'en', '-' );

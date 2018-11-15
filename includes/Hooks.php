@@ -10,6 +10,11 @@ namespace LangCodeOverride;
 class Hooks {
 
 	/**
+	 * Static store for the wiki specific overrides
+	 */
+	private static $overrides = null;
+
+	/**
 	 * Setup for the extension
 	 */
 	public static function onExtensionSetup() {
@@ -93,7 +98,7 @@ class Hooks {
 
 		// we have nothing friendly to put in the title, so fall back to
 		// displaying the interlanguage link itself in the link title
-		return $title->getInterwiki() . ":" .  $linkTitle;
+		return $title->getInterwiki() . ":" . $linkTitle;
 	}
 
 	/**
@@ -226,40 +231,38 @@ class Hooks {
 		global $wgDBname;
 		global $wgLCOverrideCodes;
 
-		// This makes the assumption that $wgDBname is the sole identification
-		// of a language specific database, that is no table prefix in use.
-		// It also imply that $wgDBname can change during normal operation
-		// as long as the interpretation of the previous name does not change.
-		static $group = null;
-		if ( $group === null ) {
+		if ( self::$overrides === null ) {
+			// This makes the assumption that $wgDBname is the sole identification
+			// of a language specific database, that is no table prefix in use.
+			// It also imply that $wgDBname can change during normal operation
+			// as long as the interpretation of the previous name does not change.
 			$group = self::getGroup( $wgDBname );
 			if ( $group === null ) {
 				wfDebugLog( 'LangCodeOverride',
 					"Could not find a valid '$group' entry at services." );
+				return true;
 			}
-		}
 
-		// With a fixed $group, then the $overrides will also be fixed. That is
-		// the overrides for a given $wgDBname will never change.
-		static $overrides = null;
-		if ( $overrides === null ) {
-			$overrides = self::findValue( $group, $wgLCOverrideCodes );
-			if ( $overrides === null ) {
+			// With a fixed $group, then the $overrides will also be fixed. That is
+			// the overrides for a given $wgDBname will never change.
+			self::$overrides = self::findValue( $group, $wgLCOverrideCodes );
+			if ( self::$overrides === null ) {
 				wfDebugLog( 'LangCodeOverride',
 					"Could not find a '$group' key among override structures." );
+				return true;
 			}
 		}
 
 		// Attempt to find the language code…
 		$langCode = self::findValue( 'lang', $languageLink );
-		if ( $overrides === null ) {
+		if ( self::$overrides === null ) {
 			wfDebugLog( 'LangCodeOverride',
 				"Could not find a value for 'lang' key in link structure." );
 		}
 
 		// … and then find a matching override code…
-		$overrideCode = self::findValue( $langCode, $overrides );
-		if ( $overrides === null ) {
+		$overrideCode = self::findValue( $langCode, self::$overrides );
+		if ( self::$overrides === null ) {
 			wfDebugLog( 'LangCodeOverride',
 				"Could not find a value for '$langCode' key in override structure." );
 		}
