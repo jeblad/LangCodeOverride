@@ -188,48 +188,6 @@ class HooksTest extends \MediaWikiTestCase {
 		$this->assertEquals( $title, $languageLink['title'] );
 	}
 
-	/**
-	 * @_dataProvider provideOverrideLanguageLink
-	 *
-	 * @SuppressWarnings(PHPMD.StaticAccess)
-	 *
-	 * @param array &$languageLink containing data about the link
-	 * @param string $overrideLangCode the language code to use
-	 * @param Title $languageLinkTitle object for the external language link
-	 * @param Title $title object for the page the link belongs to
-	 * @param OutputPage $outputPage for the page the link belongs to
-	 */
-	public function noTestOnSkinTemplateGetLanguageLink(
-		$overrideCode,
-		$link,
-		$text = null,
-		$title = null
-	) {
-		$linkedTitle = \Title::newFromText( $link );
-
-		$output = $this->newOutputPage();
-		$output->setTitle( \Title::newFromText( 'Lang code override' ) );
-		$this->assertSame( 'Lang code override', $output->getTitle()->getPrefixedText() );
-
-		$languageLink = [
-			'href' => $linkedTitle->getFullURL(),
-			'text' => 'none',
-			'title' => $linkedTitle,
-			'class' => 'interlanguage-link interwiki-' . $linkedTitle->getInterwiki(),
-			'link-class' => 'interlanguage-link-target',
-			'lang' => $linkedTitle->getInterwiki(),
-			'hreflang' => $linkedTitle->getInterwiki()
-		];
-
-		Hooks::onSkinTemplateGetLanguageLink(
-			$languageLink,
-			$overrideCode,
-			$linkedTitle,
-			$output->getTitle(),
-			$output
-		);
-	}
-
 	public function provideFindValue() {
 		return [
 			[ null, 'foo', null ],
