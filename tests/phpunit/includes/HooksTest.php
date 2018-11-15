@@ -108,15 +108,10 @@ class HooksTest extends \MediaWikiTestCase {
 
 	public function provideOverrideLanguageLink() {
 		return [
-			[ 'nb', 'no:foo', null, null ],
-			[ 'nb', 'nb:foo', null, null ],
-			[ 'ping', 'nb:foo', false, false ],
-			[ 'hbs', 'hs:foo', null, null ],
-			[ 'nbs', 'hs:foo', null, null ],
-			[ 'ping', 'hs:foo', false, false ],
-			[ 'en-simple', 'simple:foo', null, null ],
-			[ 'en-simple', 'simple:foo', null, null ],
-			[ 'ping', 'simple:foo', false, false ]
+			[ 'nb', 'no:foo', 'Norsk bokmål', 'No:foo – norsk bokmål' ],
+			[ 'nb', 'nb:foo', 'Norsk bokmål', 'Nb:foo – norsk bokmål' ],
+			[ 'ping', 'no:foo', 'No:foo', ':No:foo' ],
+			[ 'ping', 'nb:foo', 'Nb:foo', ':Nb:foo' ],
 		];
 	}
 
@@ -135,8 +130,8 @@ class HooksTest extends \MediaWikiTestCase {
 	public function testOverrideLanguageLink(
 		$overrideCode,
 		$link,
-		$text = null,
-		$title = null
+		$text,
+		$title
 	) {
 		$linkedTitle = \Title::newFromText( $link );
 
@@ -147,7 +142,7 @@ class HooksTest extends \MediaWikiTestCase {
 		$languageLink = [
 			'href' => $linkedTitle->getFullURL(),
 			'text' => 'none',
-			'title' => $linkedTitle,
+			'title' => 'none',
 			'class' => 'interlanguage-link interwiki-' . $linkedTitle->getInterwiki(),
 			'link-class' => 'interlanguage-link-target',
 			'lang' => $linkedTitle->getInterwiki(),
@@ -187,39 +182,11 @@ class HooksTest extends \MediaWikiTestCase {
 
 		// the text should be the language name for the override code
 		$this->assertArrayHasKey( 'text', $languageLink );
-		if ( $text === null ) {
-			$skin = $output->getContext()->getSkin();
-			$text = $skin->formatLanguageName( \Language::fetchLanguageName( $overrideCode ) );
-			$text = '/' . preg_quote( $text ) . '/i';
-		} elseif ( $text === true ) {
-			// this should pick up a previously set message
-			$text = '/' . '⧼' . 'interlanguage-link-' . $overrideCode . '\b' . '/i';
-		} elseif ( $text === false ) {
-			$text = '/' . preg_quote( $link ) . '/i';
-		} elseif ( gettype( $text ) === 'string' ) {
-			// nop
-		} else {
-			$this->fail( 'Should not be here…' );
-		}
-		$this->assertRegExp( $text, $languageLink['text'] );
+		$this->assertEquals( $text, $languageLink['text'] );
 
-		// the title should be a compostite with a site name
+		// the text should be the language title for the override code
 		$this->assertArrayHasKey( 'title', $languageLink );
-		if ( $title === null ) {
-			$skin = $output->getContext()->getSkin();
-			$langName = $skin->formatLanguageName( \Language::fetchLanguageName( $overrideCode ) );
-			$title = '/' . preg_quote( $langName ) . '/i';
-		} elseif ( $title === true ) {
-			// this should pick up a previously set message
-			$title = '/' . '⧼' . 'interlanguage-link-' . $overrideCode . '\b' . '/i';
-		} elseif ( $title === false ) {
-			$title = '/:' . preg_quote( $link ) . '/i';
-		} elseif ( gettype( $title ) === 'string' ) {
-			$title = '/' . preg_quote( $title ) . '/i';
-		} else {
-			$this->fail( 'Should not be here…' );
-		}
-		$this->assertRegExp( $title, $languageLink['title'] );
+		$this->assertEquals( $title, $languageLink['title'] );
 	}
 
 	/**
