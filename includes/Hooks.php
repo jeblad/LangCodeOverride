@@ -32,17 +32,17 @@ class Hooks {
 	 * @return string the link text to use
 	 */
 	public static function linkText(
-		$langName,
-		$langCode,
+		string $langName,
+		string $langCode,
 		\Title $title
 	) {
 		// Use the given language autonym for the link text?
-		if ( strval( $langName ) !== '' ) {
+		if ( $langName !== '' ) {
 			return $langName;
 		}
 
 		// Use the language code to look up the message for the link text?
-		if ( strval( $langCode ) !== '' ) {
+		if ( $langCode !== '' ) {
 			$displayTextMsg = wfMessage( "interlanguage-link-$langCode" );
 			if ( !$displayTextMsg->isDisabled() ) {
 				return $displayTextMsg->text();
@@ -63,13 +63,14 @@ class Hooks {
 	 * @return string the link title to use
 	 */
 	public static function linkTitle(
-		$langName,
-		$langCode,
-		$title
+		string $langName,
+		string $langCode,
+		\Title $title
 	) {
+		$linkTitle = $title->getText();
+
 		// Use the given language autonym for the link title?
-		if ( strval( $langName ) !== '' ) {
-			$linkTitle = $title->getText();
+		if ( $langName !== '' ) {
 			$linkTitleMsg = ( ( $linkTitle === '' )
 				? wfMessage( 'interlanguage-link-title-langonly', $langName )
 				: wfMessage( 'interlanguage-link-title', $linkTitle, $langName )
@@ -78,8 +79,8 @@ class Hooks {
 		}
 
 		// Use the language code to look up the message for the link title?
-		if ( strval( $langCode ) !== '' ) {
-			$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" )->text();
+		if ( $langCode !== '' ) {
+			$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" );
 			if ( !$displayNameMsg->isDisabled() ) {
 				$displayName = $displayNameMsg->text();
 				$linkTitleMsg = ( ( $linkTitle === '' )
@@ -92,7 +93,7 @@ class Hooks {
 
 		// we have nothing friendly to put in the title, so fall back to
 		// displaying the interlanguage link itself in the link title
-		return $title->getInterwiki() . ":$linkTitle";
+		return $title->getInterwiki() . ":" .  $linkTitle;
 	}
 
 	/**

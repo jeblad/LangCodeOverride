@@ -3,6 +3,7 @@
 namespace LangCodeOverride\Tests;
 
 use \LangCodeOverride\Hooks;
+use \MediaWiki\MediaWikiServices;
 
 /**
  * @group LangCodeOverride
@@ -10,6 +11,59 @@ use \LangCodeOverride\Hooks;
  * @covers \LangCodeOverride\Hooks
  */
 class HooksTest extends \MediaWikiTestCase {
+
+	/**
+	 * @see \MessageCacheTest::setup()
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	protected function setUp() {
+		parent::setUp();
+		$this->configureLanguages();
+		\MessageCache::destroyInstance();
+		\MessageCache::singleton()->enable();
+	}
+
+	/**
+	 * @see MessageCacheTest::setup()
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	protected function configureLanguages() {
+		$this->setUserLang( 'en' );
+		$this->setContentLang( 'en' );
+	}
+
+	/**
+	 * @see MessageCacheTest::addDBDataOnce()
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	function addDBDataOnce() {
+		$this->configureLanguages();
+		$this->makePage( 'interlanguage-link-no', 'en', 'Fancy Norwegian' );
+		$this->makePage( 'interlanguage-link-sitename-no', 'en', 'Fancy Norwegian' );
+	}
+
+	/**
+	 * @see MessageCacheTest:: makePage()
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	protected function makePage( $title, $lang, $content = null ) {
+		if ( $content === null ) {
+			$content = $lang;
+		}
+
+		if ( $lang !== \MediaWiki\MediaWikiServices::getInstance()->getContentLanguage()->getCode() ) {
+			$title = "$title/$lang";
+		}
+
+		$title = \Title::newFromText( $title, NS_MEDIAWIKI );
+		$wikiPage = new \WikiPage( $title );
+		$contentHandler = \ContentHandler::makeContent( $content, $title );
+		$wikiPage->doEditContent( $contentHandler, "This is \"$lang\" translation test case" );
+	}
 
 	/**
 	 * Create a new output page
@@ -228,6 +282,46 @@ class HooksTest extends \MediaWikiTestCase {
 	 */
 	public function testFindValue( $expect, $needle, $haystack ) {
 		$this->assertEquals( $expect, Hooks::findValue( $needle, $haystack ) );
+	}
+
+	/**
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	public function provideLinkText() {
+		return [
+			[ 'Foo', 'Foo', '', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Fancy Norwegian', '', 'no', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Bar', '', '', \Title::newFromText( 'no:Bar' ) ]
+		];
+	}
+
+	/**
+	 * @dataProvider provideLinkText
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	public function testLinkText( $expect, $langName, $langCode, $title ) {
+		$this->assertEquals( $expect, Hooks::linkText( $langName, $langCode, $title ) );
+	}
+
+	/**
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	public function provideLinkTitle() {
+		return [
+			[ 'Bar – Foo', 'Foo', '', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Bar – Fancy Norwegian', '', 'no', \Title::newFromText( 'no:Bar' ) ],
+			[ 'no:Bar', '', '', \Title::newFromText( 'no:Bar' ) ]
+		];
+	}
+
+	/**
+	 * @dataProvider provideLinkTitle
+	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 */
+	public function testLinkTitle( $expect, $langName, $langCode, $title ) {
+		$this->assertEquals( $expect, Hooks::linkTitle( $langName, $langCode, $title ) );
 	}
 
 }
