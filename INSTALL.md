@@ -27,6 +27,23 @@ $wgGroupPermissions['sysop']['interwiki'] = true;
 $wgDebugComments = true;
 ```
 
+Verify that the config in the extension.json is sufficient.
+
+```bash
+  "Codes": {
+    "wiki" : {
+      "no": "nb"
+    }
+  }
+```
+
+Change to the vagrant box and go to mediawiki
+
+```bash
+vagrant ssh
+cd /vagrant/mediawiki
+```
+
 Make sure the `$wgDBname` has an entry in the sites table.
 
 A Vagrant box will have a `$wgDBname` of `wiki`, so create a site entry
@@ -41,12 +58,22 @@ Make sure to populate the interwiki table.
 php maintenance/populateInterwiki.php --source https://en.wikipedia.org/w/api.php
 ```
 
-Verify that the config in the extension.json is sufficient.
+Change into extensions/LangCodeOverride
 
 ```bash
-  "Codes": {
-    "wiki" : {
-      "no": "nb"
-    }
-  }
+cd extensions/LangCodeOverride
 ```
+
+Install dependencies
+
+```bash
+composer install
+```
+
+Load the optional test pages
+
+```bash
+composer import
+```
+
+At this point the instance should be available at http://dev.wiki.local.wmftest.net:8080/wiki/Test_Page
