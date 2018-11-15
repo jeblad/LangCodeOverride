@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jeblad"
+			"Jeblad",
+			"Metalhead64"
 		]
 	},
-	"lang-code-override-desc": "Überschreiben der Sprachcodes für einige Sprachlinks"
+	"lang-code-override-desc": "Überschreibt den Sprachcode für einige Sprachlinks"
 }
