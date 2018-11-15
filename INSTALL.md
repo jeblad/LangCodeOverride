@@ -70,6 +70,14 @@ Install dependencies
 composer install
 ```
 
+At this point the vagrant instance should be restarted as a lot has changed
+
+```bash
+exit
+vagrant reload
+vagrant ssh
+```
+
 Load the optional test pages
 
 ```bash
