@@ -1,0 +1,59 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <siteinfo>
+    <sitename>devwiki</sitename>
+    <dbname>wiki</dbname>
+    <base>http://dev.wiki.local.wmftest.net:8080/wiki/Main_Page</base>
+    <generator>MediaWiki 1.33.0-alpha</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="-2" case="first-letter">Media</namespace>
+      <namespace key="-1" case="first-letter">Special</namespace>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="3" case="first-letter">User talk</namespace>
+      <namespace key="4" case="first-letter">Wiki</namespace>
+      <namespace key="5" case="first-letter">Wiki talk</namespace>
+      <namespace key="6" case="first-letter">File</namespace>
+      <namespace key="7" case="first-letter">File talk</namespace>
+      <namespace key="8" case="first-letter">MediaWiki</namespace>
+      <namespace key="9" case="first-letter">MediaWiki talk</namespace>
+      <namespace key="10" case="first-letter">Template</namespace>
+      <namespace key="11" case="first-letter">Template talk</namespace>
+      <namespace key="12" case="first-letter">Help</namespace>
+      <namespace key="13" case="first-letter">Help talk</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+      <namespace key="15" case="first-letter">Category talk</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Test Page</title>
+    <ns>0</ns>
+    <id>4</id>
+    <revision>
+      <id>9</id>
+      <parentid>8</parentid>
+      <timestamp>2018-11-15T04:00:45Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="585">'''Test Page''' with example language links.
+
+Given the example setup
+
+* the &lt;code&gt;&lt;nowiki&gt;[[de:Foo]]&lt;/nowiki&gt;&lt;/code&gt; should have "Deutsch" as text and "Foo – Deutsch" as title
+* the &lt;code&gt;&lt;nowiki&gt;[[no:Foo]]&lt;/nowiki&gt;&lt;/code&gt; should have "Norsk bokmål" as text and "Foo – norsk bokmål" as title
+* the &lt;code&gt;&lt;nowiki&gt;[[nn:Foo]]&lt;/nowiki&gt;&lt;/code&gt; should have "Norsk nynorsk" as text and "Foo – norsk nynorsk" as title
+* the &lt;code&gt;&lt;nowiki&gt;[[ru:Foo]]&lt;/nowiki&gt;&lt;/code&gt; should have "Русский" as text and "Foo – русский" as title
+
+[[de:Foo]]
+[[no:Foo]]
+[[nn:Foo]]
+[[ru:Foo]]</text>
+      <sha1>p3ku9rdc4zmqgldismztgt37izu18d0</sha1>
+    </revision>
+  </page>
+</mediawiki>
