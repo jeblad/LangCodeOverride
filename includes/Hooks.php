@@ -255,16 +255,18 @@ class Hooks {
 
 		// Attempt to find the language code…
 		$langCode = self::findValue( 'lang', $languageLink );
-		if ( self::$overrides === null ) {
+		if ( $langCode === null ) {
 			wfDebugLog( 'LangCodeOverride',
 				"Could not find a value for 'lang' key in link structure." );
+			return true;
 		}
 
 		// … and then find a matching override code…
 		$overrideCode = self::findValue( $langCode, self::$overrides );
-		if ( self::$overrides === null ) {
+		if ( $overrideCode === null ) {
 			wfDebugLog( 'LangCodeOverride',
 				"Could not find a value for '$langCode' key in override structure." );
+			return true;
 		}
 
 		// … and if so override the language link
