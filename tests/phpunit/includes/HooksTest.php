@@ -42,7 +42,9 @@ class HooksTest extends \MediaWikiTestCase {
 	function addDBDataOnce() {
 		$this->configureLanguages();
 		$this->makePage( 'interlanguage-link-no', 'en', 'Fancy Norwegian' );
+		$this->makePage( 'interlanguage-link-nb', 'en', '-' );
 		$this->makePage( 'interlanguage-link-sitename-no', 'en', 'Fancy Norwegian' );
+		$this->makePage( 'interlanguage-link-sitename-nb', 'en', '-' );
 	}
 
 	/**
@@ -291,6 +293,7 @@ class HooksTest extends \MediaWikiTestCase {
 		return [
 			[ 'Foo', 'Foo', '', \Title::newFromText( 'no:Bar' ) ],
 			[ 'Fancy Norwegian', '', 'no', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Bar', '', 'nb', \Title::newFromText( 'no:Bar' ) ],
 			[ 'Bar', '', '', \Title::newFromText( 'no:Bar' ) ]
 		];
 	}
@@ -310,7 +313,10 @@ class HooksTest extends \MediaWikiTestCase {
 	public function provideLinkTitle() {
 		return [
 			[ 'Bar – Foo', 'Foo', '', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Foo', 'Foo', '', \Title::newFromText( 'no:' ) ],
 			[ 'Bar – Fancy Norwegian', '', 'no', \Title::newFromText( 'no:Bar' ) ],
+			[ 'Fancy Norwegian', '', 'no', \Title::newFromText( 'no:' ) ],
+			[ 'no:Bar', '', 'nb', \Title::newFromText( 'no:Bar' ) ],
 			[ 'no:Bar', '', '', \Title::newFromText( 'no:Bar' ) ]
 		];
 	}
