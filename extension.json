@@ -7,7 +7,7 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:LangCodeOverride",
 	"descriptionmsg": "lang-code-override-desc",
 	"license-name": "GPL-3.0",
-	"type": "other",
+	"type": "skin",
 	"AutoloadClasses": {
 		"LangCodeOverride\\Hooks":
 			"includes/Hooks.php",
