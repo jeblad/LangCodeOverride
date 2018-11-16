@@ -236,6 +236,7 @@ class Hooks {
 			// of a language specific database, that is no table prefix in use.
 			// It also imply that $wgDBname can change during normal operation
 			// as long as the interpretation of the previous name does not change.
+			// TODO Verify functional correctness in a WMF environment
 			$group = self::getGroup( $wgDBname );
 			if ( $group === null ) {
 				wfDebugLog( 'LangCodeOverride',
