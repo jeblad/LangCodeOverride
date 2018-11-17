@@ -14,7 +14,14 @@ cd mediawiki/extensions
 git clone git@github.com:jeblad/LangCodeOverride.git
 ```
 
-Add a line to `LocalSettings.php` for loading of the extension
+Installing the extension can be done with 
+
+```bash
+vagrant roles enable langcodeoverride
+vagrant provision
+```
+
+or manually by adding a line to `LocalSettings.php` for loading of the extension
 
 ```php
 wfLoadExtension('LangCodeOverride');
