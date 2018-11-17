@@ -71,13 +71,13 @@ Change into extensions/LangCodeOverride
 cd extensions/LangCodeOverride
 ```
 
-Install dependencies
+Install dependencies (not necessary if extension is installed as a role)
 
 ```bash
 composer install
 ```
 
-At this point the vagrant instance should be restarted as a lot has changed
+At this point the vagrant instance should be restarted as a lot has changed (not necessary if extension is installed as a role)
 
 ```bash
 exit
