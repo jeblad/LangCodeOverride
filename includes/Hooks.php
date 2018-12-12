@@ -12,7 +12,7 @@ class Hooks {
 	/**
 	 * Static store for the wiki specific overrides
 	 */
-	private static $overrides = null;
+	private static $override = null;
 
 	/**
 	 * Setup for the extension
@@ -29,193 +29,61 @@ class Hooks {
 	}
 
 	/**
-	 * Figure out which one of several possible texts to use
+	 * Resolve the DBname into language codes to override
 	 *
-	 * @param string $langName the name to be used if exist
-	 * @param string $langCode the code to be used if exist
-	 * @param \Title $title the object to use as fallback
-	 * @return string the link text to use
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 *
+	 * @param string $dbName is the database name to use
+	 * @return array of language codes to override
 	 */
-	public static function linkText(
-		string $langName,
-		string $langCode,
-		\Title $title
-	) {
-		// Use the given language autonym for the link text?
-		if ( $langName !== '' ) {
-			return $langName;
-		}
+	protected static function findOverrideCodes( $dbName ) {
+		global $wgLCOverrideCodes;
 
-		// Use the language code to look up the message for the link text?
-		if ( $langCode !== '' ) {
-			$displayTextMsg = wfMessage( "interlanguage-link-$langCode" );
-			if ( !$displayTextMsg->isDisabled() ) {
-				return $displayTextMsg->text();
-			}
-		}
+		// Start out empty
+		$overrideCodes = [];
 
-		// We have nothing friendly to put in the title, so fall back to
-		// displaying the interlanguage link itself in the link text
-		return $title->getText();
-	}
-
-	/**
-	 * Figure out which one of several possible texts to use
-	 *
-	 * @param string $langName the name to be used if exist
-	 * @param string $langCode the code to be used if exist
-	 * @param \Title $title the object to use as fallback
-	 * @return string the link title to use
-	 */
-	public static function linkTitle(
-		string $langName,
-		string $langCode,
-		\Title $title
-	) {
-		$linkTitle = $title->getText();
-
-		// Use the given language autonym for the link title?
-		if ( $langName !== '' ) {
-			$linkTitleMsg = ( ( $linkTitle === '' )
-				? wfMessage( 'interlanguage-link-title-langonly', $langName )
-				: wfMessage( 'interlanguage-link-title', $linkTitle, $langName )
-			);
-			return $linkTitleMsg->text();
-		}
-
-		// Use the language code to look up the message for the link title?
-		if ( $langCode !== '' ) {
-			$displayNameMsg = wfMessage( "interlanguage-link-sitename-$langCode" );
-			if ( !$displayNameMsg->isDisabled() ) {
-				$displayName = $displayNameMsg->text();
-				$linkTitleMsg = ( ( $linkTitle === '' )
-					? wfMessage( 'interlanguage-link-title-nonlangonly', $displayName )
-					: wfMessage( 'interlanguage-link-title-nonlang', $linkTitle, $displayName )
-				);
-				return $linkTitleMsg->text();
-			}
-		}
-
-		// we have nothing friendly to put in the title, so fall back to
-		// displaying the interlanguage link itself in the link title
-		return $title->getInterwiki() . ":" . $linkTitle;
-	}
-
-	/**
-	 * Override the language link
-	 * This tries to mimic the inner actions of SkinTemplate::getLanguages()
-	 *
-	 * An formal parameter is passed on, which is never used.
-	 * @SuppressWarnings(PHPMD.UnusedFormalParameters)
-	 *
-	 * @param array &$languageLink containing data about the link
-	 * @param string $overrideLangCode the language code to use
-	 * @param Title $languageLinkTitle object for the external language link
-	 * @param Title $title object for the page the link belongs to
-	 * @param OutputPage $output for the page the link belongs to
-	 * @param Language $language for testing purposes
-	 * @param LanguageCode $languageCode for testing purposes
-	 */
-	public static function overrideLanguageLink(
-		&$languageLink,
-		$overrideLangCode,
-		$languageLinkTitle,
-		$title,
-		$output,
-		 // for testing purposes
-		$language = \Language::class,
-		$languageCode = \LanguageCode::class
-	) {
-		$skin = $output->getContext()->getSkin();
-		$userLang = $skin->getLanguage();
-
-		$langName = $language::fetchLanguageName( $overrideLangCode );
-
-		$linkText = self::linkText(
-			$skin->formatLanguageName( $langName ),
-			$overrideLangCode,
-			$languageLinkTitle
-		);
-
-		// CLDR extension or similar is required to localize the language name;
-		// otherwise we'll end up with the autonym again.
-		$langLocalName = $language::fetchLanguageName(
-			$overrideLangCode,
-			$userLang->getCode()
-		);
-
-		$linkTitle = self::linkTitle(
-			$langLocalName,
-			$overrideLangCode,
-			$languageLinkTitle
-		);
-
-		$langCodeBCP47 = $languageCode::bcp47( $overrideLangCode );
-		$class = "interlanguage-link interwiki-$overrideLangCode";
-
-		$languageLink['href'] = $languageLinkTitle->getFullURL();
-		$languageLink['text'] = $linkText;
-		$languageLink['title'] = $linkTitle;
-		$languageLink['class'] = $class;
-		$languageLink['link-class'] = 'interlanguage-link-target';
-		$languageLink['lang'] = $langCodeBCP47;
-		$languageLink['hreflang'] = $langCodeBCP47;
-	}
-
-	/**
-	 * Get group for the given database id
-	 *
-	 * @param string $dbname the identifier for the database
-	 * @param \MediaWiki\MediaWikiServices $services the provider
-	 * @return string|null the group for the database
-	 */
-	public static function getGroup(
-		$dbname,
-		$services = \MediaWiki\MediaWikiServices::class
-	) {
-		$siteLookup = $services::getInstance()->getSiteLookup();
+		// find the site lookup
+		$siteLookup = \MediaWiki\MediaWikiServices::getInstance()->getSiteLookup();
 		if ( $siteLookup === null ) {
-			return null;
+			wfErrorLog( 'LangCodeOverride',
+				"Could not locate a valid 'siteLookup' service." );
+			return $overrideCodes;
 		}
-
-		$site = $siteLookup->getSite( $dbname );
+		
+		// This makes the assumption that $dbName is the sole identification
+		// of a language specific database, that is no table prefix in use.
+		$site = $siteLookup->getSite( $dbName );
 		if ( $site === null ) {
-			return null;
+			wfErrorLog( 'LangCodeOverride',
+				"Could not locate a valid '$dbName' site instance." );
+			return $overrideCodes;
 		}
 
+		// Get a group entry from the config.
 		$group = $site->getGroup();
-
-		return $group;
-	}
-
-	/**
-	 * Find value give a needle and a haystack
-	 *
-	 * @param string|null $needle to find
-	 * @param array|null $haystack to search
-	 * @return any|null whats found
-	 */
-	public static function findValue( $needle, $haystack ) {
-		if ( $needle === null ) {
-			return null;
+		if ( $group === null or !is_string( $group ) ) {
+			wfWarningLog( 'LangCodeOverride',
+				"Could not get a valid 'group' entry from the site instance." );
+			return $overrideCodes;
 		}
 
-		if ( $haystack === null ) {
-			return null;
+		// With a fixed $group, then the $override will also be fixed. That is
+		// the overrides for a given $wgDBname will never change.
+		$overrideCodes = Util::findValue( $group, $wgLCOverrideCodes );
+		if ( $overrideCodes === null or !is_array( $overrideCodes ) ) {
+			wfWarningLog( 'LangCodeOverride',
+				"Could not find a valid '$group' entry among override structures." );
+			return $overrideCodes;
 		}
 
-		if ( !array_key_exists( $needle, $haystack ) ) {
-			return null;
-		}
-
-		$value = $haystack[$needle];
-
-		return $value;
+		return $overrideCodes;
 	}
 
 	/**
 	 * Handler for SkinTemplateGetLanguageLink
 	 *
+	 * @SuppressWarnings(PHPMD.StaticAccess)
+	 * 
 	 * @param array &$languageLink containing data about the link
 	 * @param Title $languageLinkTitle object for the external language link
 	 * @param Title $title object for the page the link belongs to
@@ -229,51 +97,14 @@ class Hooks {
 		$output
 	) {
 		global $wgDBname;
-		global $wgLCOverrideCodes;
 
-		if ( self::$overrides === null ) {
-			// This makes the assumption that $wgDBname is the sole identification
-			// of a language specific database, that is no table prefix in use.
-			// It also imply that $wgDBname can change during normal operation
-			// as long as the interpretation of the previous name does not change.
-			// TODO Verify functional correctness in a WMF environment
-			$group = self::getGroup( $wgDBname );
-			if ( $group === null ) {
-				wfDebugLog( 'LangCodeOverride',
-					"Could not find a valid '$group' entry at services." );
-				return true;
-			}
-
-			// With a fixed $group, then the $overrides will also be fixed. That is
-			// the overrides for a given $wgDBname will never change.
-			self::$overrides = self::findValue( $group, $wgLCOverrideCodes );
-			if ( self::$overrides === null ) {
-				wfDebugLog( 'LangCodeOverride',
-					"Could not find a '$group' key among override structures." );
-				return true;
-			}
+		if ( self::$override === null ) {
+			$langCodes = self::findOverrideCodes( $wgDBname );
+			self::$override = Override::makeFromLangCodes( $langCodes );
 		}
 
-		// Attempt to find the language code…
-		$langCode = self::findValue( 'lang', $languageLink );
-		if ( $langCode === null ) {
-			wfDebugLog( 'LangCodeOverride',
-				"Could not find a value for 'lang' key in link structure." );
-			return true;
-		}
-
-		// … and then find a matching override code…
-		$overrideCode = self::findValue( $langCode, self::$overrides );
-		if ( $overrideCode === null ) {
-			wfDebugLog( 'LangCodeOverride',
-				"Could not find a value for '$langCode' key in override structure." );
-			return true;
-		}
-
-		// … and if so override the language link
-		self::overrideLanguageLink(
+		self::$override->changeLanguageLink(
 			$languageLink,
-			$overrideCode,
 			$languageLinkTitle,
 			$title,
 			$output

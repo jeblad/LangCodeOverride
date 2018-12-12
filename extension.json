@@ -11,8 +11,10 @@
 	"AutoloadClasses": {
 		"LangCodeOverride\\Hooks":
 			"includes/Hooks.php",
-		"Pickle\\Tests\\HooksTestCase":
-			"tests/phpunit/includes/Hooks/HooksTestCase.php"
+		"LangCodeOverride\\Util":
+			"includes/Util.php",
+			"LangCodeOverride\\Override":
+				"includes/Override.php"
 	},
 	"config": {
 		"_prefix": "wgLCOverride",
