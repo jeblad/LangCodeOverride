@@ -11,7 +11,7 @@ git clone --recursive https://gerrit.wikimedia.org/r/mediawiki/vagrant .
 ./setup.sh
 vagrant up
 cd mediawiki/extensions
-git clone git@github.com:jeblad/LangCodeOverride.git
+git clone git@github.com:jeblad/LangCodeOverride.git # not if you will load it as a role
 ```
 
 Installing the extension can be done with 
