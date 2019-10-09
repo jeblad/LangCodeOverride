@@ -1,4 +1,4 @@
-# TranslateWiki
+# Translating
 
 This extension is translated at [TranslateWiki](https://translatewiki.net/wiki/Special:Translate/mwgithub-langcodeoverride).
 
